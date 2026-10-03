@@ -47,3 +47,22 @@ automatically become CRM leads with source `website`.
 `src/data/courses.ts` is transcribed from the official fee-structure brochure. After
 Supabase is connected, edit courses from **/admin/courses** instead (the site reads the
 `programs` table).
+
+## Demo logins (testing)
+
+Every login screen has **Demo login** buttons. After connecting Supabase, create the
+demo accounts once (needs `SUPABASE_SERVICE_ROLE_KEY` in `.env.local`):
+
+```bash
+npm run demo:setup
+```
+
+| Portal | Login | Password |
+|---|---|---|
+| Office staff (CRM admin + website admin) | `demo.admin@swanidhi.test` | `Demo@12345` |
+| Associate | `demo.associate@swanidhi.test` | `Demo@12345` |
+| Student | enrollment no. `DEMO-STU-001` | `Demo@12345` |
+
+Running the command again resets the passwords. **Before going live**, set
+`NEXT_PUBLIC_DEMO_LOGIN=false` (hides the buttons) and delete the demo users in
+Supabase → Authentication.

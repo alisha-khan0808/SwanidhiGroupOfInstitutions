@@ -144,3 +144,7 @@
 /* Hide scrollbars on horizontal scroll strips */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+/* Hide the "Powered by Netlify" badge Netlify injects on published sites. */
+#nl-badge-frame {
+  display: none !important;
+}

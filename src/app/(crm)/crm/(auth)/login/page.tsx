@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -12,6 +12,9 @@ import { toast } from 'sonner'
 import Image from 'next/image'
 
 import { BRAND } from '@/lib/brand'
+import { isSupabaseConfigured } from '@/lib/supabase'
+import { DEMO_ACCOUNTS, DEMO_SETUP_HINT } from '@/lib/demo'
+import DemoLoginButtons, { type DemoRole } from '@/components/shared/DemoLoginButtons'
 const loginSchema = z.object({
   email: z.string().email('Valid email required'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
@@ -21,18 +24,28 @@ type LoginFormData = z.infer<typeof loginSchema>
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false)
+  const [demoRole, setDemoRole] = useState<DemoRole | null>(null)
+  const demoStarted = useRef(false)
   const [isAssociate, setIsAssociate] = useState(false)
 
   useEffect(() => {
-    setIsAssociate(new URLSearchParams(window.location.search).get('as') === 'associate')
+    const params = new URLSearchParams(window.location.search)
+    setIsAssociate(params.get('as') === 'associate')
+    // Arriving from the student screen's demo buttons (?demo=admin|associate)
+    const demo = params.get('demo')
+    if (!demoStarted.current && (demo === 'admin' || demo === 'associate')) {
+      demoStarted.current = true
+      demoLogin(demo)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   const supabase = createClient()
 
-  const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   })
 
-  async function onSubmit(data: LoginFormData) {
+  async function onSubmit(data: LoginFormData, isDemo = false) {
     setLoading(true)
     try {
       const { error } = await supabase.auth.signInWithPassword({
@@ -40,7 +53,7 @@ export default function LoginPage() {
         password: data.password,
       })
       if (error) {
-        toast.error(error.message)
+        toast.error(isDemo ? DEMO_SETUP_HINT : error.message)
         return
       }
       // Route associate users to their own portal
@@ -62,7 +75,24 @@ export default function LoginPage() {
       toast.error('Something went wrong')
     } finally {
       setLoading(false)
+      setDemoRole(null)
     }
+  }
+
+  async function demoLogin(role: DemoRole) {
+    if (role === 'student') {
+      window.location.assign('/crm/student/login?demo=1')
+      return
+    }
+    if (!isSupabaseConfigured) {
+      toast.error(DEMO_SETUP_HINT)
+      return
+    }
+    const account = DEMO_ACCOUNTS[role]
+    setValue('email', account.email)
+    setValue('password', account.password)
+    setDemoRole(role)
+    await onSubmit({ email: account.email, password: account.password }, true)
   }
 
 
@@ -129,7 +159,7 @@ export default function LoginPage() {
             </div>
 
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            <form onSubmit={handleSubmit((d) => onSubmit(d))} className="space-y-5">
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-sm font-medium text-gray-700">Email Address</Label>
                 <Input
@@ -180,6 +210,8 @@ export default function LoginPage() {
                 )}
               </Button>
             </form>
+
+            <DemoLoginButtons onSelect={demoLogin} loadingRole={demoRole} disabled={loading} />
 
             <p className="text-center text-sm text-gray-500 mt-8">
               Developed by{' '}

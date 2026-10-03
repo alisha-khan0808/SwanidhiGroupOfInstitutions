@@ -70,3 +70,8 @@ body {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 1;
 }
+
+/* Hide the "Powered by Netlify" badge Netlify injects on published sites. */
+#nl-badge-frame {
+  display: none !important;
+}
