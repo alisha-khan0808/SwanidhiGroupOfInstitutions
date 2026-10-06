@@ -9,10 +9,10 @@ export const BRAND = {
   motto: "ज्ञानं परमं बलम्",
   mottoMeaning: "Knowledge is the supreme strength",
 
-  // TODO: replace placeholder contact details with the real ones.
-  phone: "+91 00000 00000",
-  phoneHref: "tel:+910000000000",
-  whatsappHref: "https://wa.me/910000000000",
+  // Institution contact number (calls + WhatsApp). TODO: confirm email & address.
+  phone: "+91 94318 99956",
+  phoneHref: "tel:+919431899956",
+  whatsappHref: "https://wa.me/919431899956",
   email: "info@swanidhi.edu.in",
   admissionsEmail: "admissions@swanidhi.edu.in",
   address: "Swanidhi Group of Institutions, India",
