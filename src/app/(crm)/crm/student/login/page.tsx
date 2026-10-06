@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -13,9 +13,6 @@ import { GraduationCap, BookOpen, Award, Users, Eye, EyeOff } from 'lucide-react
 import Image from 'next/image'
 
 import { BRAND } from '@/lib/brand'
-import { isSupabaseConfigured } from '@/lib/supabase'
-import { DEMO_ACCOUNTS, DEMO_SETUP_HINT } from '@/lib/demo'
-import DemoLoginButtons, { type DemoRole } from '@/components/shared/DemoLoginButtons'
 const loginSchema = z.object({
   username: z.string().min(1, 'Enrollment number required'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
@@ -25,15 +22,13 @@ type LoginForm = z.infer<typeof loginSchema>
 export default function StudentLoginPage() {
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const [demoRole, setDemoRole] = useState<DemoRole | null>(null)
-  const demoStarted = useRef(false)
   const supabase = createClient()
 
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm<LoginForm>({
+  const { register, handleSubmit, formState: { errors } } = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
   })
 
-  async function onSubmit(data: LoginForm, isDemo = false) {
+  async function onSubmit(data: LoginForm) {
     setLoading(true)
     try {
       const rawUsername = data.username.trim()
@@ -48,7 +43,7 @@ export default function StudentLoginPage() {
       if (!lookupRes.ok) {
         const json = await lookupRes.json().catch(() => ({}))
         // Show the specific error from the server
-        toast.error(isDemo ? DEMO_SETUP_HINT : (json.error ?? 'Enrollment number not found. Please contact your counsellor.'))
+        toast.error(json.error ?? 'Enrollment number not found. Please contact your counsellor.')
         return
       }
 
@@ -61,7 +56,7 @@ export default function StudentLoginPage() {
       })
 
       if (error) {
-        toast.error(isDemo ? DEMO_SETUP_HINT : 'Wrong password. Please try again or contact your counsellor to reset it.')
+        toast.error('Wrong password. Please try again or contact your counsellor to reset it.')
         return
       }
 
@@ -73,33 +68,8 @@ export default function StudentLoginPage() {
       toast.error('Something went wrong. Please try again.')
     } finally {
       setLoading(false)
-      setDemoRole(null)
     }
   }
-
-  async function demoLogin(role: DemoRole) {
-    if (role !== 'student') {
-      window.location.assign(role === 'associate' ? '/crm/login?as=associate&demo=associate' : '/crm/login?demo=admin')
-      return
-    }
-    if (!isSupabaseConfigured) {
-      toast.error(DEMO_SETUP_HINT)
-      return
-    }
-    const { enrollment, password } = DEMO_ACCOUNTS.student
-    setValue('username', enrollment)
-    setValue('password', password)
-    setDemoRole('student')
-    await onSubmit({ username: enrollment, password }, true)
-  }
-
-  // Arriving from another login screen's "Student" demo button (?demo=1)
-  useEffect(() => {
-    if (demoStarted.current || new URLSearchParams(window.location.search).get('demo') !== '1') return
-    demoStarted.current = true
-    demoLogin('student')
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 flex items-center justify-center p-4">
@@ -161,7 +131,7 @@ export default function StudentLoginPage() {
                   <p className="text-gray-500 text-sm mt-1">Enter your enrollment number and password</p>
                 </div>
 
-                <form onSubmit={handleSubmit((d) => onSubmit(d))} className="space-y-5">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                   <div className="space-y-1.5">
                     <Label htmlFor="username" className="text-sm font-medium text-gray-700">
                       Enrollment Number
@@ -211,10 +181,6 @@ export default function StudentLoginPage() {
                     ) : 'Sign In to Portal'}
                   </Button>
                 </form>
-
-                <div className="mt-6">
-                  <DemoLoginButtons onSelect={demoLogin} loadingRole={demoRole} disabled={loading} />
-                </div>
 
                 <div className="mt-8 p-4 bg-blue-50 rounded-xl border border-blue-100">
                   <p className="text-xs text-blue-700 font-medium mb-1">Need help logging in?</p>

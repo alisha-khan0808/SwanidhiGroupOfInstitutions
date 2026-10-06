@@ -3802,5 +3802,5 @@ create trigger on_enquiry_to_crm_lead
 insert into profiles (id, email, full_name, role, is_active)
 select u.id, u.email, 'Swanidhi Admin', 'admin', true
 from auth.users u
-where u.email = 'info@swanidhi.edu.in'   -- ← CRM admin email
+where u.email = 'admin@swanidhi.com'   -- ← CRM admin email
 on conflict (id) do update set role = 'admin', is_active = true;

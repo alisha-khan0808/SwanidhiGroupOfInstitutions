@@ -5,8 +5,6 @@ import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import { BRAND } from '@/lib/brand'
-import { DEMO_ACCOUNTS, DEMO_SETUP_HINT } from '@/lib/demo'
-import DemoLoginButtons from '@/components/shared/DemoLoginButtons'
 
 export default function AdminLoginPage() {
   const router = useRouter()
@@ -16,17 +14,14 @@ export default function AdminLoginPage() {
   const [error, setError] = useState('')
   const [showPassword, setShowPassword] = useState(false)
 
-  const login = async (loginEmail: string, loginPassword: string, isDemo = false) => {
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
     setError('')
-    if (isDemo && !isSupabaseConfigured) {
-      setError(DEMO_SETUP_HINT)
-      return
-    }
     setLoading(true)
     try {
-      const { error: authError } = await supabase.auth.signInWithPassword({ email: loginEmail, password: loginPassword })
+      const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
       if (authError) {
-        setError(isDemo ? DEMO_SETUP_HINT : 'Invalid email or password.')
+        setError('Invalid email or password.')
         return
       }
       const { data: isAdmin } = await supabase.rpc('is_admin')
@@ -41,18 +36,6 @@ export default function AdminLoginPage() {
     } finally {
       setLoading(false)
     }
-  }
-
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault()
-    login(email, password)
-  }
-
-  const demoLogin = () => {
-    const { email: demoEmail, password: demoPassword } = DEMO_ACCOUNTS.admin
-    setEmail(demoEmail)
-    setPassword(demoPassword)
-    login(demoEmail, demoPassword, true)
   }
 
   return (
@@ -129,10 +112,6 @@ export default function AdminLoginPage() {
               ) : 'Sign In'}
             </button>
           </form>
-
-          <div className="mt-6">
-            <DemoLoginButtons roles={['admin']} labels={{ admin: { label: 'Website Admin', desc: 'Courses, blogs & leads' } }} onSelect={demoLogin} loadingRole={loading ? 'admin' : null} disabled={loading} />
-          </div>
         </div>
 
         <p className="text-center text-blue-200 text-xs mt-6">{BRAND.name} &copy; {new Date().getFullYear()}</p>

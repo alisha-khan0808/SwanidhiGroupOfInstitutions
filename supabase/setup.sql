@@ -295,4 +295,4 @@ select setval(pg_get_serial_sequence('scholarships', 'id'), (select max(id) from
 -- ─────────────── Admin access ───────────────
 -- ← Replace with the email of your website admin (create the same user in
 --   Supabase → Authentication → Users first).
-insert into admins (email) values ('info@swanidhi.edu.in') on conflict do nothing;
+insert into admins (email) values ('admin@swanidhi.com') on conflict do nothing;

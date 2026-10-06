@@ -36,8 +36,9 @@ The public website works immediately — until Supabase is connected it serves t
    1. `supabase/setup.sql` — website tables + all 49 courses, blogs, scholarships
    2. `supabase/crm_setup.sql` — CRM tables + courses, 11 departments, sessions and the published fee structure
    3. `supabase/whatsapp_setup.sql` — only if you use the WhatsApp bot (`whatsapp-bot/`)
-3. Authentication → Users → add your admin user, then make sure its email is in the
-   `admins` insert at the end of `setup.sql` and the `profiles` insert at the end of `crm_setup.sql`.
+3. Admin login: put your password into `supabase/create_admin_user.sql` and run it in the
+   SQL Editor. It creates `admin@swanidhi.com` (confirmed) and grants website-admin and CRM-admin
+   access. It works before or after step 2, and re-running it just updates the password.
 
 Website enquiries (Contact / Apply / course pages) are stored in `enquiries` and
 automatically become CRM leads with source `website`.
@@ -47,22 +48,3 @@ automatically become CRM leads with source `website`.
 `src/data/courses.ts` is transcribed from the official fee-structure brochure. After
 Supabase is connected, edit courses from **/admin/courses** instead (the site reads the
 `programs` table).
-
-## Demo logins (testing)
-
-Every login screen has **Demo login** buttons. After connecting Supabase, create the
-demo accounts once (needs `SUPABASE_SERVICE_ROLE_KEY` in `.env.local`):
-
-```bash
-npm run demo:setup
-```
-
-| Portal | Login | Password |
-|---|---|---|
-| Office staff (CRM admin + website admin) | `demo.admin@swanidhi.test` | `Demo@12345` |
-| Associate | `demo.associate@swanidhi.test` | `Demo@12345` |
-| Student | enrollment no. `DEMO-STU-001` | `Demo@12345` |
-
-Running the command again resets the passwords. **Before going live**, set
-`NEXT_PUBLIC_DEMO_LOGIN=false` (hides the buttons) and delete the demo users in
-Supabase → Authentication.
