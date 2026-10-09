@@ -2,21 +2,23 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
-  Menu, X, Search, LogIn, LayoutGrid, Building2, IndianRupee, FileSignature,
+  Menu, X, Search, LogIn, LayoutGrid, Building2, IndianRupee, FileSignature, School,
   Briefcase, GraduationCap, Handshake, ChevronRight, ChevronDown, Wrench, Award, Compass,
 } from "lucide-react";
 import { BRAND } from "@/lib/brand";
 
 const quickLinks = [
+  { label: "All Colleges", href: "/colleges", icon: School },
   { label: "All Courses", href: "/courses", icon: LayoutGrid },
-  { label: "Departments", href: "/departments", icon: Building2 },
-  { label: "Fee Structure", href: "/fee-structure", icon: IndianRupee },
+  { label: "Departments", href: "/departments", icon: Building2, wideOnly: true },
+  { label: "Fee Structure", href: "/fee-structure", icon: IndianRupee, wideOnly: true },
   { label: "Apply Online", href: "/apply", icon: FileSignature, live: true },
 ];
 
 const navLinks = [
+  { label: "All Colleges", href: "/colleges" },
   { label: "Departments", href: "/departments" },
   { label: "Courses", href: "/courses" },
   { label: "Fee Structure", href: "/fee-structure" },
@@ -50,6 +52,8 @@ const announcements = [
 
 export default function Navbar() {
   const router = useRouter();
+  const pathname = usePathname();
+  const isActive = (href: string) => href !== "/" && (pathname === href || pathname.startsWith(href + "/"));
   const [isOpen, setIsOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
   const [toolsOpen, setToolsOpen] = useState(false);
@@ -75,9 +79,15 @@ export default function Navbar() {
               </span>
             </Link>
 
-            <div className="hidden xl:flex items-center gap-5">
-              {quickLinks.map(({ label, href, icon: Icon, live }) => (
-                <Link key={label} href={href} className="flex items-center gap-1.5 text-[13px] font-medium text-slate-700 hover:text-blue-600 whitespace-nowrap transition-colors">
+            <div className="hidden xl:flex items-center gap-1">
+              {quickLinks.map(({ label, href, icon: Icon, live, wideOnly }) => (
+                <Link
+                  key={label}
+                  href={href}
+                  className={`${wideOnly ? "hidden 2xl:flex" : "flex"} items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[13px] font-medium whitespace-nowrap transition-colors ${
+                    isActive(href) ? "bg-blue-50 text-blue-700 font-semibold" : "text-slate-700 hover:text-blue-600"
+                  }`}
+                >
                   <Icon className="w-4 h-4" />
                   {label}
                   {live && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />}
@@ -117,8 +127,8 @@ export default function Navbar() {
           <div className="max-w-[1320px] mx-auto px-6 h-10 flex items-center justify-center gap-1 text-[13px]">
             {navLinks.map((l, i) => (
               <span key={l.label} className="flex items-center">
-                {(i === 2 || i === 5) && <span className="mx-2 h-4 w-px bg-slate-200" />}
-                <Link href={l.href} className={`px-3 py-1 rounded-md font-medium whitespace-nowrap transition-colors ${l.highlight ? "text-blue-600" : "text-slate-600 hover:text-blue-600"}`}>
+                {(i === 3 || i === 6) && <span className="mx-2 h-4 w-px bg-slate-200" />}
+                <Link href={l.href} className={`px-3 py-1 rounded-md font-medium whitespace-nowrap transition-colors ${isActive(l.href) ? "bg-blue-50 text-blue-700" : l.highlight ? "text-blue-600" : "text-slate-600 hover:text-blue-600"}`}>
                   {l.label}
                 </Link>
               </span>
