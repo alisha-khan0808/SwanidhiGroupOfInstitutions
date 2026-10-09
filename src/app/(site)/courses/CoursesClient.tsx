@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { Breadcrumb } from "@/components/DetailBits";
 import CourseCard, { levelColors } from "@/components/CourseCard";
 import { departments, levels, feeRanges, formatINR, getDepartment, type Course } from "@/data/courses";
 import {
@@ -106,18 +107,22 @@ export default function CoursesClient({ courses }: { courses: Course[] }) {
   return (
     <>
       <Navbar />
-      <div className="bg-gray-50 min-h-screen">
+      <div className="bg-violet-50/60 min-h-screen">
         {/* Page Header */}
-        <div className="bg-white border-b border-gray-100">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-            <h1 className="text-2xl font-bold text-gray-900">All Courses — Fees, Duration &amp; Eligibility</h1>
-            <p className="text-gray-500 text-sm mt-1">
-              Showing <span className="font-semibold text-blue-600">{filtered.length}</span> of {courses.length} courses &bull; Fees shown are as per the current fee structure
+        <div className="bg-grid border-b border-slate-100">
+          <div className="max-w-[1320px] mx-auto px-4 sm:px-6 py-10">
+            <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Courses" }]} />
+            <h1 className="mt-4 text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">Search &amp; Compare {courses.length} Courses</h1>
+            <p className="text-slate-600 mt-2 max-w-3xl">
+              Medical, Nursing, Paramedical, Pharmacy, Law, Education, Management and ITI programmes — compare duration, eligibility and year-wise fees.
+            </p>
+            <p className="text-slate-500 text-sm mt-3">
+              Showing <span className="font-semibold text-blue-600">{filtered.length}</span> of {courses.length} courses &bull; Fees as per the current fee structure
             </p>
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+        <div className="max-w-[1320px] mx-auto px-4 sm:px-6 py-8">
           <div className="flex gap-6">
             {/* ── Sidebar Filters ── */}
             <aside className={`shrink-0 w-64 space-y-4 ${showFilters ? "block" : "hidden lg:block"}`}>

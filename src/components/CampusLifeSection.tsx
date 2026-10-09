@@ -21,13 +21,13 @@ const tiles = [
 
 export default function CampusLifeSection() {
   return (
-    <section className="py-16 lg:py-20 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+    <section className="py-16 lg:py-20 bg-violet-50/70">
+      <div className="max-w-[1320px] mx-auto px-4 sm:px-6">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
           <div>
-            <p className="text-green-600 text-sm font-semibold uppercase tracking-wider mb-2">Campus Life</p>
-            <h2 className="text-3xl sm:text-4xl font-bold text-blue-950 leading-tight">
-              Where Students <span className="text-green-600">Enjoy Learning</span>
+            <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-indigo-600 mb-3"><span className="h-[3px] w-6 rounded-full bg-indigo-600" /> Campus Life</p>
+            <h2 className="text-3xl sm:text-[2.1rem] font-extrabold text-slate-900 tracking-tight leading-tight">
+              Where Students <span className="text-gradient">Enjoy Learning</span>
             </h2>
             <p className="text-gray-500 mt-2 max-w-xl">
               Practical classes, supportive faculty and a friendly campus — learning here is something students look forward to.
@@ -53,7 +53,7 @@ export default function CampusLifeSection() {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-blue-950/85 via-blue-950/20 to-transparent" />
             <figcaption className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
-              <span className="inline-block bg-green-500 text-blue-950 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-3">
+              <span className="inline-block bg-white text-indigo-700 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-3">
                 Student Life
               </span>
               <h3 className="text-2xl sm:text-3xl font-bold text-white mb-1">{featured.title}</h3>
@@ -75,7 +75,7 @@ export default function CampusLifeSection() {
                 <div className="absolute inset-0 bg-gradient-to-t from-blue-950/80 via-transparent to-transparent" />
                 <figcaption className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 flex items-center gap-2">
                   <span className="w-8 h-8 rounded-lg bg-white/15 backdrop-blur flex items-center justify-center shrink-0">
-                    <Icon className="w-4 h-4 text-green-300" />
+                    <Icon className="w-4 h-4 text-indigo-200" />
                   </span>
                   <span className="text-white font-semibold text-xs sm:text-sm leading-tight">{title}</span>
                 </figcaption>

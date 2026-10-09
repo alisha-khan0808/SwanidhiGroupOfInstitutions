@@ -1,71 +1,74 @@
 import Link from "next/link";
-import Image from "next/image";
-import { Clock, GraduationCap } from "lucide-react";
-import { type Course, getDepartment, formatINR, formatLakh } from "@/data/courses";
+import { ArrowRight, Building2, Clock, Star } from "lucide-react";
+import { type Course, getDepartment, formatLakh } from "@/data/courses";
+import DepartmentIcon from "@/components/DepartmentIcon";
 
 export const levelColors: Record<string, string> = {
-  Certificate: "bg-orange-100 text-orange-700",
-  Diploma: "bg-sky-100 text-sky-700",
-  Degree: "bg-green-100 text-green-700",
-  Integrated: "bg-amber-100 text-amber-700",
-  "Lateral Entry": "bg-teal-100 text-teal-700",
-  "Post Graduate": "bg-purple-100 text-purple-700",
+  Certificate: "bg-orange-50 text-orange-700 border-orange-100",
+  Diploma: "bg-sky-50 text-sky-700 border-sky-100",
+  Degree: "bg-indigo-50 text-indigo-700 border-indigo-100",
+  Integrated: "bg-amber-50 text-amber-700 border-amber-100",
+  "Lateral Entry": "bg-teal-50 text-teal-700 border-teal-100",
+  "Post Graduate": "bg-violet-50 text-violet-700 border-violet-100",
 };
+
+// Short level tag like the reference's "UG • 3 Years".
+export const levelTag = (level: Course["level"]) =>
+  level === "Post Graduate" ? "PG" : level === "Degree" || level === "Integrated" || level === "Lateral Entry" ? "UG" : level;
 
 export default function CourseCard({ course }: { course: Course }) {
   const dept = getDepartment(course.department);
+  const tags = course.careers.slice(0, 2);
+  const more = Math.max(0, course.careers.length - tags.length);
 
   return (
-    <Link href={`/courses/${course.slug}`}>
-      <div className="bg-white rounded-2xl border border-gray-100 hover:border-blue-200 hover:shadow-lg transition-all duration-300 overflow-hidden group cursor-pointer h-full flex flex-col">
-        {/* Image */}
-        <div className="relative h-44 overflow-hidden shrink-0">
-          <Image
-            src={course.image}
-            alt={course.name}
-            fill
-            className="object-cover group-hover:scale-105 transition-transform duration-500"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-          <div className="absolute top-3 left-3 bg-white/95 px-2.5 py-1 rounded-full text-xs font-bold text-blue-600">
-            {dept?.shortName ?? course.department}
-          </div>
-          <div className={`absolute top-3 right-3 px-2.5 py-1 rounded-full text-xs font-semibold ${levelColors[course.level] ?? "bg-gray-100 text-gray-700"}`}>
-            {course.level}
-          </div>
-          <div className="absolute bottom-3 left-3 right-3">
-            <p className="text-white text-xl font-black drop-shadow">{course.name}</p>
-          </div>
+    <div className="group h-full flex flex-col rounded-2xl bg-white border border-slate-100 p-4 shadow-sm hover:shadow-xl hover:shadow-indigo-900/5 hover:border-indigo-200 transition-all">
+      <div className="flex items-start gap-3">
+        <span className="w-12 h-12 rounded-xl border border-slate-100 bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+          <DepartmentIcon slug={course.department} className="w-5 h-5" />
+        </span>
+        <div className="flex-1 min-w-0">
+          <Link href={`/courses/${course.slug}`} className="block font-bold text-slate-900 text-[15px] leading-snug line-clamp-2 group-hover:text-indigo-700">
+            {course.name}
+          </Link>
+          <p className="flex items-center gap-1 text-xs text-slate-500 mt-1 truncate">
+            <Building2 className="w-3 h-3 shrink-0" /> {dept?.shortName}
+          </p>
         </div>
-
-        {/* Body */}
-        <div className="p-4 flex flex-col flex-1">
-          <h3 className="font-bold text-gray-900 text-sm leading-snug mb-2 group-hover:text-blue-600 transition-colors line-clamp-2">
-            {course.fullName}
-          </h3>
-          <div className="flex items-center gap-1.5 text-gray-500 text-xs mb-2">
-            <Clock className="w-3 h-3 shrink-0" />
-            <span className="truncate">{course.duration}</span>
-          </div>
-          <div className="flex items-start gap-1.5 text-gray-500 text-xs mb-3">
-            <GraduationCap className="w-3 h-3 shrink-0 mt-0.5" />
-            <span className="line-clamp-2">{course.eligibility}</span>
-          </div>
-
-          {/* Stats footer */}
-          <div className="mt-auto border-t border-gray-100 pt-3 grid grid-cols-2 gap-1">
-            <div>
-              <p className="text-xs text-gray-400">1st Year Fee</p>
-              <p className="text-xs font-bold text-blue-600">{formatINR(course.yearlyFees[0] ?? 0)}</p>
-            </div>
-            <div className="text-right">
-              <p className="text-xs text-gray-400">Total Course Fee</p>
-              <p className="text-xs font-bold text-green-600">{formatLakh(course.totalFee)}</p>
-            </div>
-          </div>
-        </div>
+        <span className={`shrink-0 rounded-full border px-2.5 py-0.5 text-[11px] font-bold ${levelColors[course.level] ?? "bg-slate-50 text-slate-600 border-slate-100"}`}>
+          {levelTag(course.level)}
+        </span>
       </div>
-    </Link>
+
+      <p className="text-xs text-slate-500 mt-3 line-clamp-1" title={course.fullName}>{course.fullName}</p>
+
+      <div className="flex flex-wrap items-center gap-2 mt-3">
+        <span className="inline-flex items-center gap-1 rounded-lg bg-indigo-50 px-2 py-1 text-[11px] font-bold text-indigo-700">
+          Total: {formatLakh(course.totalFee)}
+        </span>
+        <span className="inline-flex items-center gap-1 rounded-lg bg-slate-50 px-2 py-1 text-[11px] font-semibold text-slate-600">
+          <Clock className="w-3 h-3" /> {course.duration.replace(/ Month Internship| Year Internship/, " Intern.")}
+        </span>
+        {course.featured && (
+          <span className="inline-flex items-center gap-1 rounded-lg bg-amber-50 px-2 py-1 text-[11px] font-bold text-amber-700">
+            <Star className="w-3 h-3 fill-amber-400 text-amber-400" /> Popular
+          </span>
+        )}
+      </div>
+
+      <div className="flex flex-wrap gap-1.5 mt-3 mb-4">
+        {tags.map((t) => (
+          <span key={t} className="rounded-md bg-slate-50 border border-slate-100 px-2 py-0.5 text-[11px] text-slate-600 max-w-full truncate">{t}</span>
+        ))}
+        {more > 0 && <span className="rounded-md bg-slate-50 border border-slate-100 px-2 py-0.5 text-[11px] text-slate-500">+{more}</span>}
+      </div>
+
+      <Link
+        href={`/courses/${course.slug}`}
+        className="mt-auto inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 py-2.5 text-[13px] font-semibold text-slate-800 hover:border-indigo-600 hover:bg-indigo-600 hover:text-white transition-colors"
+      >
+        Explore Course <ArrowRight className="w-3.5 h-3.5" />
+      </Link>
+    </div>
   );
 }

@@ -8,52 +8,31 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-jakarta);
   --font-mono: var(--font-geist-mono);
 }
 
-/* Brand palette — from the Swanidhi logo: deep navy + gold.
-   The public site uses Tailwind blue (primary) and green / emerald
-   (accent) utilities throughout, so remapping them here re-themes every page. */
+/* Reference design (collegeforme.in): indigo primary on lavender.
+   The site uses Tailwind blue utilities as "primary", so blue is remapped to
+   the indigo scale here; green stays Tailwind's default for success states. */
 @theme {
-  --color-blue-50: #eef3fb;
-  --color-blue-100: #d8e2f4;
-  --color-blue-200: #b4c6e8;
-  --color-blue-300: #85a1d6;
-  --color-blue-400: #5677bd;
-  --color-blue-500: #3557a1;
-  --color-blue-600: #234386;
-  --color-blue-700: #1b356c;
-  --color-blue-800: #162b58;
-  --color-blue-900: #122249;
-  --color-blue-950: #0b1631;
-
-  --color-green-50: #fdf8ec;
-  --color-green-100: #f9edcc;
-  --color-green-200: #f2db99;
-  --color-green-300: #e8c466;
-  --color-green-400: #ddaf45;
-  --color-green-500: #c9972e;
-  --color-green-600: #a97a1f;
-  --color-green-700: #8a611a;
-  --color-green-800: #6e4d18;
-  --color-green-900: #5a3f16;
-
-  --color-emerald-50: #fdf8ec;
-  --color-emerald-100: #f9edcc;
-  --color-emerald-200: #f2db99;
-  --color-emerald-300: #e8c466;
-  --color-emerald-400: #ddaf45;
-  --color-emerald-500: #c9972e;
-  --color-emerald-600: #a97a1f;
-  --color-emerald-700: #8a611a;
-  --color-emerald-800: #6e4d18;
+  --color-blue-50: #eef2ff;
+  --color-blue-100: #e0e7ff;
+  --color-blue-200: #c7d2fe;
+  --color-blue-300: #a5b4fc;
+  --color-blue-400: #818cf8;
+  --color-blue-500: #6366f1;
+  --color-blue-600: #4f46e5;
+  --color-blue-700: #4338ca;
+  --color-blue-800: #3730a3;
+  --color-blue-900: #312e81;
+  --color-blue-950: #1e1b4b;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
 }
 
 .scrollbar-hide::-webkit-scrollbar {
@@ -74,4 +53,46 @@ body {
 /* Hide the "Powered by Netlify" badge Netlify injects on published sites. */
 #nl-badge-frame {
   display: none !important;
+}
+
+/* ── Reference-style utilities ── */
+.text-gradient {
+  background-image: linear-gradient(90deg, #4f46e5, #818cf8);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.bg-gradient-brand {
+  background-image: linear-gradient(90deg, #4f46e5, #818cf8);
+}
+.bg-grid {
+  background-color: #f8f7ff;
+  background-image:
+    linear-gradient(to right, rgba(79, 70, 229, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(79, 70, 229, 0.06) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 40s linear infinite;
+}
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+@keyframes float-y {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.animate-float {
+  animation: float-y 5s ease-in-out infinite;
+}
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up {
+  animation: fade-up 0.5s ease-out both;
 }
