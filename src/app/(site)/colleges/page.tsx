@@ -6,6 +6,7 @@ import CollegesClient, { type CollegeCardData } from "./CollegesClient";
 import { getColleges, getCourses } from "@/lib/content";
 import { BRAND } from "@/lib/brand";
 import { getDepartment } from "@/data/courses";
+import { campusImage } from "@/data/colleges";
 
 export const revalidate = 3600;
 
@@ -26,7 +27,7 @@ export default async function CollegesPage() {
       department: col.department,
       deptName: dept?.name ?? col.department,
       location: col.location || BRAND.address,
-      image: col.image || dept?.image || "",
+      image: campusImage(col, col.department),
       logo: col.logo,
       badge: col.badge,
       established: col.established,
