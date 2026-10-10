@@ -2,6 +2,52 @@ import { supabase, isSupabaseConfigured } from './supabase'
 import { courses as localCourses, type Course } from '@/data/courses'
 import { blogs as localBlogs, type BlogPost } from '@/data/blogs'
 import { scholarships as localScholarships, type Scholarship } from '@/data/scholarships'
+import { colleges as localColleges, type College } from '@/data/colleges'
+
+export interface CollegeRow {
+  id: number
+  slug: string
+  name: string
+  short_name: string
+  department: string
+  location: string
+  image: string
+  logo: string
+  badge: string
+  established: number | null
+  description: string
+  sort_order: number
+}
+
+const toCollege = (r: CollegeRow): College => ({
+  id: r.id,
+  slug: r.slug,
+  name: r.name,
+  shortName: r.short_name,
+  department: r.department,
+  location: r.location,
+  image: r.image,
+  logo: r.logo,
+  badge: r.badge,
+  established: r.established,
+  description: r.description,
+  sortOrder: r.sort_order,
+})
+
+// Falls back to the demo list if the `colleges` table hasn't been created
+// yet (supabase/colleges.sql), so the site keeps working either way.
+export async function getColleges(): Promise<College[]> {
+  if (!isSupabaseConfigured) return localColleges
+  const { data, error } = await supabase.from('colleges').select('*').order('sort_order').order('id')
+  if (error || !data?.length) {
+    if (error) console.warn(`colleges: ${error.message} — using demo college names`)
+    return localColleges
+  }
+  return (data as CollegeRow[]).map(toCollege)
+}
+
+/** College for a department (first by sort order), if any. */
+export const collegeFor = (all: College[], department: string) => all.find((c) => c.department === department)
 
 export interface ProgramRow {
   id: number

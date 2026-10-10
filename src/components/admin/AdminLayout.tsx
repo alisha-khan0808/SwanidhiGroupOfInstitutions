@@ -4,13 +4,14 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter, usePathname } from 'next/navigation'
-import { LayoutDashboard, GraduationCap, BookOpen, Award, Inbox, LogOut, Menu, ExternalLink } from 'lucide-react'
+import { LayoutDashboard, GraduationCap, BookOpen, Award, Inbox, LogOut, Menu, ExternalLink, School } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { BRAND } from '@/lib/brand'
 
 const navLinks = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/admin/leads', label: 'Leads', icon: Inbox },
+  { href: '/admin/colleges', label: 'Colleges', icon: School },
   { href: '/admin/courses', label: 'Courses', icon: GraduationCap },
   { href: '/admin/blogs', label: 'Blogs', icon: BookOpen },
   { href: '/admin/scholarships', label: 'Scholarships', icon: Award },

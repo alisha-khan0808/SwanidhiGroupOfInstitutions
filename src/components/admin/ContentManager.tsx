@@ -22,7 +22,7 @@ export type Field = {
 }
 
 export interface ContentManagerProps {
-  table: 'programs' | 'blogs' | 'scholarships'
+  table: 'programs' | 'colleges' | 'blogs' | 'scholarships'
   title: string
   singular: string
   fields: Field[]

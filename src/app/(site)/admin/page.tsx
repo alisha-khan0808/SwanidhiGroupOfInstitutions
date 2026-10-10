@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Inbox, GraduationCap, BookOpen, Award, BellDot } from 'lucide-react'
+import { Inbox, GraduationCap, BookOpen, Award, BellDot, School } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import AdminLayout from '@/components/admin/AdminLayout'
 
@@ -31,11 +31,12 @@ export default function AdminDashboard() {
       count('enquiries'),
       count('enquiries', ['status', 'new']),
       count('programs'),
+      count('colleges'),
       count('blogs'),
       count('scholarships'),
       supabase.from('enquiries').select('id, name, phone, course, status, created_at').order('created_at', { ascending: false }).limit(6),
-    ]).then(([leads, newLeads, courses, blogs, scholarships, recentRes]) => {
-      setStats({ leads, newLeads, courses, blogs, scholarships })
+    ]).then(([leads, newLeads, courses, colleges, blogs, scholarships, recentRes]) => {
+      setStats({ leads, newLeads, courses, colleges, blogs, scholarships })
       setRecent((recentRes.data as RecentLead[]) ?? [])
     })
   }, [])
@@ -43,6 +44,7 @@ export default function AdminDashboard() {
   const cards = [
     { label: 'New Leads', key: 'newLeads', href: '/admin/leads', icon: BellDot, color: 'bg-red-50 text-red-600' },
     { label: 'Total Leads', key: 'leads', href: '/admin/leads', icon: Inbox, color: 'bg-green-50 text-green-600' },
+    { label: 'Colleges', key: 'colleges', href: '/admin/colleges', icon: School, color: 'bg-indigo-50 text-indigo-600' },
     { label: 'Courses', key: 'courses', href: '/admin/courses', icon: GraduationCap, color: 'bg-blue-50 text-blue-600' },
     { label: 'Blogs', key: 'blogs', href: '/admin/blogs', icon: BookOpen, color: 'bg-purple-50 text-purple-600' },
     { label: 'Scholarships', key: 'scholarships', href: '/admin/scholarships', icon: Award, color: 'bg-yellow-50 text-yellow-600' },
@@ -56,7 +58,7 @@ export default function AdminDashboard() {
           <p className="text-gray-500 text-sm mt-1">Leads and website content at a glance</p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
           {cards.map(({ label, key, href, icon: Icon, color }) => (
             <Link key={key} href={href} className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex items-center gap-4 hover:border-blue-200 transition-colors">
               <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${color}`}>

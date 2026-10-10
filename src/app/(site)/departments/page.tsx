@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Breadcrumb } from "@/components/DetailBits";
-import { getCourses } from "@/lib/content";
+import { getCourses, getColleges, collegeFor } from "@/lib/content";
 import { BRAND } from "@/lib/brand";
 import { departments, levels, formatINR } from "@/data/courses";
 import DepartmentIcon from "@/components/DepartmentIcon";
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 };
 
 export default async function DepartmentsPage() {
-  const courses = await getCourses();
+  const [courses, colleges] = await Promise.all([getCourses(), getColleges()]);
   const rows = departments.map((d) => {
     const list = courses.filter((c) => c.department === d.slug);
     const durs = list.map((c) => c.durationYears);
@@ -86,8 +86,9 @@ export default async function DepartmentsPage() {
                           <span className="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-emerald-700"><BadgeCheck className="w-3 h-3" /> Admissions Open</span>
                           {lv.map((l) => <span key={l} className="rounded-md bg-indigo-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-indigo-700">{l}</span>)}
                         </div>
-                        <Link href={`/departments/${d.slug}`} className="mt-1.5 block text-lg font-extrabold text-slate-900 hover:text-indigo-700">{d.name}</Link>
-                        <p className="flex items-center gap-1 text-sm text-slate-500"><MapPin className="w-3.5 h-3.5" /> {BRAND.name}</p>
+                        <Link href={`/departments/${d.slug}`} className="mt-1.5 block text-lg font-extrabold text-slate-900 hover:text-indigo-700">{collegeFor(colleges, d.slug)?.name ?? d.name}</Link>
+                        <p className="text-xs font-semibold text-indigo-600">Department of {d.name}</p>
+                        <p className="flex items-center gap-1 text-sm text-slate-500 mt-0.5"><MapPin className="w-3.5 h-3.5" /> {collegeFor(colleges, d.slug)?.location || BRAND.address}</p>
 
                         <div className="mt-4 grid grid-cols-3 gap-3 max-w-md">
                           {[

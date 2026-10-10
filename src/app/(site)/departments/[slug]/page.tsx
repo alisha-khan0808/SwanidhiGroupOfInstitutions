@@ -5,7 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CourseCard, { levelTag } from "@/components/CourseCard";
 import { Breadcrumb, StatStrip, SectionTabs, Card, ApplyCard, QuickFacts, Faqs, lastUpdated } from "@/components/DetailBits";
-import { getCourses } from "@/lib/content";
+import { getCourses, getColleges, collegeFor } from "@/lib/content";
 import { BRAND } from "@/lib/brand";
 import { departments, getDepartment, formatINR, formatLakh } from "@/data/courses";
 import DepartmentIcon from "@/components/DepartmentIcon";
@@ -25,7 +25,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { slug } = await params;
   const dept = getDepartment(slug);
   if (!dept) return {};
-  return { title: `${dept.name} Admission ${BRAND.session}, Courses & Fees`, description: dept.description };
+  const college = collegeFor(await getColleges(), dept.slug);
+  return { title: `${college?.name ?? dept.name} Admission ${BRAND.session}, Courses & Fees`, description: dept.description };
 }
 
 const yearsLabel = (n: number) => `${n % 1 ? n.toFixed(1).replace(".5", "½") : n} ${n === 1 ? "Year" : "Years"}`;
@@ -35,7 +36,10 @@ export default async function DepartmentPage({ params }: PageProps) {
   const dept = getDepartment(slug);
   if (!dept) notFound();
 
-  const courses = (await getCourses()).filter((c) => c.department === dept.slug);
+  const [allCourses, colleges] = await Promise.all([getCourses(), getColleges()]);
+  const courses = allCourses.filter((c) => c.department === dept.slug);
+  const college = collegeFor(colleges, dept.slug);
+  const title = college?.name ?? dept.name;
   const annual = courses.map((c) => c.yearlyFees[0] ?? c.totalFee);
   const totals = courses.map((c) => c.totalFee);
   const durs = courses.map((c) => c.durationYears);
@@ -55,7 +59,7 @@ export default async function DepartmentPage({ params }: PageProps) {
       <div className="bg-violet-50/60">
         {/* Header */}
         <div className="max-w-[1320px] mx-auto px-4 sm:px-6 pt-6 pb-6">
-          <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Departments", href: "/departments" }, { label: dept.name }]} />
+          <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Colleges", href: "/colleges" }, { label: title }]} />
           <div className="mt-4 rounded-3xl border border-slate-100 bg-white p-6 sm:p-8 shadow-sm">
             <div className="flex flex-col lg:flex-row lg:items-start gap-6">
               <span className="w-20 h-20 rounded-2xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center shrink-0"><DepartmentIcon slug={dept.slug} className="w-9 h-9" /></span>
@@ -64,9 +68,10 @@ export default async function DepartmentPage({ params }: PageProps) {
                   {levels.map((l) => <span key={l} className="rounded-md bg-indigo-50 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-indigo-700">{l}</span>)}
                   <span className="rounded-md bg-emerald-50 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-emerald-700">Admissions Open</span>
                 </div>
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">{dept.name}</h1>
-                <p className="flex items-center gap-1.5 text-sm text-slate-500 mt-1"><MapPin className="w-4 h-4" /> {BRAND.address}</p>
-                <p className="mt-3 text-[15px] font-semibold text-slate-800">{dept.name} — Admission {BRAND.session}, Courses, Fees &amp; Eligibility</p>
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">{title}</h1>
+                {college && <p className="text-sm font-semibold text-indigo-600 mt-0.5">Department of {dept.name}</p>}
+                <p className="flex items-center gap-1.5 text-sm text-slate-500 mt-1"><MapPin className="w-4 h-4" /> {college?.location || BRAND.address}{college?.established ? ` · Est. ${college.established}` : ""}</p>
+                <p className="mt-3 text-[15px] font-semibold text-slate-800">{title} — Admission {BRAND.session}, Courses, Fees &amp; Eligibility</p>
                 <p className="text-xs text-slate-400 mt-1">Last updated on {lastUpdated()}</p>
               </div>
               <div className="flex lg:flex-col gap-2 shrink-0">

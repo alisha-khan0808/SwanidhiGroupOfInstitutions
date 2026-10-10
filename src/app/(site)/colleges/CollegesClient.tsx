@@ -8,12 +8,16 @@ import DepartmentIcon from "@/components/DepartmentIcon";
 import { BRAND } from "@/lib/brand";
 import { formatINR, formatLakh, levels as allLevels, type CourseLevel } from "@/data/courses";
 
-export interface CollegeRow {
+export interface CollegeCardData {
   slug: string;
   name: string;
-  shortName: string;
+  department: string;
+  deptName: string;
+  location: string;
   image: string;
-  description: string;
+  logo: string;
+  badge: string;
+  established: number | null;
   programmes: number;
   feesFrom: number;
   levels: CourseLevel[];
@@ -36,7 +40,7 @@ const SORTS = [
   { value: "name", label: "Name (A–Z)" },
 ];
 
-export default function CollegesClient({ rows }: { rows: CollegeRow[] }) {
+export default function CollegesClient({ rows }: { rows: CollegeCardData[] }) {
   const params = useSearchParams();
   const [q, setQ] = useState(params.get("q") ?? "");
   const [sort, setSort] = useState("relevant");
@@ -50,7 +54,7 @@ export default function CollegesClient({ rows }: { rows: CollegeRow[] }) {
     if (t) r = r.filter((x) => x.search.includes(t));
     if (stream) {
       const s = STREAMS.find((x) => x.label === stream);
-      if (s) r = r.filter((x) => s.slugs.includes(x.slug));
+      if (s) r = r.filter((x) => s.slugs.includes(x.department));
     }
     if (lvls.length) r = r.filter((x) => x.levels.some((l) => lvls.includes(l)));
     const out = [...r];
@@ -71,7 +75,7 @@ export default function CollegesClient({ rows }: { rows: CollegeRow[] }) {
           <h1 className="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">
             Explore <span className="text-gradient">Our Colleges</span>
           </h1>
-          <p className="mt-3 text-slate-500 text-[15px]">Search, filter and compare the colleges &amp; departments of {BRAND.name}.</p>
+          <p className="mt-3 text-slate-500 text-[15px]">Search, filter and compare the colleges of {BRAND.name}.</p>
         </div>
       </div>
 
@@ -108,7 +112,7 @@ export default function CollegesClient({ rows }: { rows: CollegeRow[] }) {
           <div className="rounded-2xl border border-slate-100 bg-white p-3 shadow-sm flex gap-2">
             <label className="relative flex-1 min-w-0">
               <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-              <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search colleges, departments, courses…" className="w-full h-11 rounded-xl border border-slate-200 pl-10 pr-9 text-sm outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-50" />
+              <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search colleges, cities, courses…" className="w-full h-11 rounded-xl border border-slate-200 pl-10 pr-9 text-sm outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-50" />
               {q && <button type="button" onClick={() => setQ("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" aria-label="Clear search"><X className="w-4 h-4" /></button>}
             </label>
             <select value={sort} onChange={(e) => setSort(e.target.value)} className="hidden sm:block h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none focus:border-indigo-400">
@@ -130,17 +134,22 @@ export default function CollegesClient({ rows }: { rows: CollegeRow[] }) {
             <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-5">
               {filtered.map((c) => (
                 <div key={c.slug} className="group flex flex-col rounded-2xl border border-slate-100 bg-white overflow-hidden shadow-sm hover:shadow-xl hover:shadow-indigo-900/5 hover:border-indigo-200 transition-all">
-                  <Link href={`/departments/${c.slug}`} className="relative block h-44">
+                  <Link href={`/departments/${c.department}`} className="relative block h-44">
                     <Image src={c.image} alt={c.name} fill className="object-cover group-hover:scale-105 transition-transform duration-700" sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-                    <span className="absolute top-3 right-3 inline-flex items-center gap-1 rounded-full bg-emerald-500 px-2.5 py-1 text-[11px] font-bold text-white shadow"><BadgeCheck className="w-3.5 h-3.5" /> Admissions Open</span>
-                    <span className="absolute -bottom-6 right-4 w-14 h-14 rounded-xl bg-white border border-slate-100 shadow-md flex items-center justify-center text-indigo-600">
-                      <DepartmentIcon slug={c.slug} className="w-6 h-6" />
+                    {c.badge && <span className="absolute top-3 right-3 inline-flex items-center gap-1 rounded-full bg-emerald-500 px-2.5 py-1 text-[11px] font-bold text-white shadow"><BadgeCheck className="w-3.5 h-3.5" /> {c.badge}</span>}
+                    <span className="absolute -bottom-7 right-4 w-16 h-16 rounded-xl bg-white border border-slate-100 shadow-md flex items-center justify-center text-indigo-600 overflow-hidden">
+                      {c.logo ? (
+                        <Image src={c.logo} alt={`${c.name} logo`} width={64} height={64} className="w-full h-full object-contain p-1.5" />
+                      ) : (
+                        <DepartmentIcon slug={c.department} className="w-7 h-7" />
+                      )}
                     </span>
                   </Link>
                   <div className="p-4 pt-4 flex flex-col flex-1">
-                    <Link href={`/departments/${c.slug}`} className="pr-16 font-extrabold text-slate-900 leading-snug hover:text-indigo-700">{c.name}</Link>
-                    <p className="flex items-center gap-1 text-xs text-slate-500 mt-1"><MapPin className="w-3.5 h-3.5" /> {BRAND.name}</p>
+                    <Link href={`/departments/${c.department}`} className="pr-16 text-[17px] font-extrabold text-slate-900 leading-snug group-hover:text-indigo-700 hover:text-indigo-700">{c.name}</Link>
+                    <p className="flex items-center gap-1 text-[13px] text-slate-500 mt-1"><MapPin className="w-3.5 h-3.5 shrink-0" /> {c.location}{c.established ? ` · Est. ${c.established}` : ""}</p>
+                    <p className="mt-1 text-xs font-semibold text-indigo-600">{c.deptName}</p>
 
                     <div className="grid grid-cols-2 gap-2.5 mt-4">
                       <div className="rounded-xl bg-indigo-50/70 px-3 py-2.5">
@@ -166,7 +175,7 @@ export default function CollegesClient({ rows }: { rows: CollegeRow[] }) {
                     </ul>
 
                     <div className="grid grid-cols-2 gap-2 mt-4">
-                      <Link href={`/departments/${c.slug}`} className="inline-flex items-center justify-center rounded-xl border border-slate-200 py-2.5 text-[13px] font-semibold text-slate-800 hover:border-indigo-400 hover:text-indigo-700">View Details</Link>
+                      <Link href={`/departments/${c.department}`} className="inline-flex items-center justify-center rounded-xl border border-slate-200 py-2.5 text-[13px] font-semibold text-slate-800 hover:border-indigo-400 hover:text-indigo-700">View Details</Link>
                       <Link href="/apply" className="inline-flex items-center justify-center gap-1 rounded-xl bg-gradient-brand py-2.5 text-[13px] font-bold text-white">Apply Now <ArrowRight className="w-3.5 h-3.5" /></Link>
                     </div>
                   </div>
